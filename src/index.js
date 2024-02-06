@@ -84,5 +84,48 @@ app.post("/createPost/:userId", validatePost, (req, res) => {
   }
 });
 
+//listar os recados
+app.get("/posts", (req, res) => {
+  return res.status(200).json({msg: "Lista de recados", data: posts});
+});
+
+//atualizar os recados
+app.put("/posts/:userId/:postId", validatePost, (req, res) => {
+  const data = req.body;
+  const postId = req.params.postId;
+  const userId = req.params.userId;
+  const newPost = {
+    id: Date.now().toString(),
+    title: data.title,
+    description: data.description,
+  };
+
+  const userIndex = loggedUsers.findIndex((loggedUser) => loggedUser.id === userId);
+  const postIndex = posts.findIndex((post) => post.id === postId);
+
+  if (postIndex !== -1 && userIndex !== -1) {
+    posts[postIndex] = newPost;
+    res.status(200).json({msg: "Post atualizado com sucesso", data: postId});
+  } else {
+    return res.status(404).json({msg: "Não foi possível atualizar o post"});
+  }
+});
+
+//deletar post
+app.delete("/posts/:userId/:postId", (req, res) => {
+  const postId = req.params.postId;
+  const userId = req.params.userId;
+
+  const userIndex = loggedUsers.findIndex((loggedUser) => loggedUser.id === userId);
+  const postIndex = posts.findIndex((post) => post.id === postId);
+
+  if (postIndex !== -1 && userIndex !== -1) {
+    posts.splice(postIndex, 1);
+    res.status(200).json({msg: "Post apagado com sucesso"});
+  } else {
+    return res.status(404).json({msg: "Não foi possível apagar o post"});
+  }
+});
+
 //mensagem de início de servidor
 app.listen(8080, () => console.log("Servidor iniciado"));
