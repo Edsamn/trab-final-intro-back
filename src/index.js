@@ -7,7 +7,7 @@ import validatePost from "./middlewares/validatePost";
 const app = express();
 app.use(express.json());
 app.use(cors());
-const port = 3030;
+const port = 3333;
 
 const users = [];
 const posts = [];
@@ -40,7 +40,7 @@ app.post("/createUser/crypto", validateUser, async (req, res) => {
 
 //listar todos os usuários
 app.get("/users", (req, res) => {
-  return res.status(200).json({msg: "Lista de usuários atuais", data: users});
+  return res.status(200).json({msg: "Lista de usuários criados", data: users});
 });
 
 //login
@@ -50,24 +50,26 @@ app.post("/userLogin", async (req, res) => {
   const pass = data.pass;
 
   const user = users.find((user) => user.email === email);
-
   const passMatch = await bcrypt.compare(pass, user.pass);
 
   if (!passMatch) {
-    return res.status(400).json({msg: "Login inválido"});
+    res.status(400).json({msg: "Login inválido"});
   }
 
   if (!user) {
-    return res.status(400).json({msg: "Login inválido"});
+    res.status(400).json({msg: "Login inválido"});
   }
-  loggedUsers.push(user);
 
-  const alreadyLogged = loggedUsers.find((loggedUser) => loggedUser.email === email);
-
-  if (alreadyLogged) {
-    res.status(400).json({msg: "Usuário já está logado"});
-  }
   res.status(200).json({msg: "Bem vindo!"});
+
+  loggedUsers.push(user);
+});
+
+//listar usuários logados
+app.get("/loggedUsers", (req, res) => {
+  if (loggedUsers) {
+    return res.status(200).json({msg: "Usuários logados no momento", data: loggedUsers});
+  }
 });
 
 //criar recado
