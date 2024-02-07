@@ -61,7 +61,13 @@ app.post("/userLogin", async (req, res) => {
     return res.status(400).json({msg: "Login inválido"});
   }
   loggedUsers.push(user);
-  res.status(200).json({msg: "Bem vindo!", data: user});
+
+  const alreadyLogged = loggedUsers.find((loggedUser) => loggedUser.email === email);
+
+  if (alreadyLogged) {
+    res.status(400).json({msg: "Usuário já está logado"});
+  }
+  res.status(200).json({msg: "Bem vindo!"});
 });
 
 //criar recado
