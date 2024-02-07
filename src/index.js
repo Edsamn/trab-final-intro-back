@@ -7,6 +7,7 @@ import validatePost from "./middlewares/validatePost";
 const app = express();
 app.use(express.json());
 app.use(cors());
+const port = 3030;
 
 const users = [];
 const posts = [];
@@ -128,4 +129,4 @@ app.delete("/posts/:userId/:postId", (req, res) => {
 });
 
 //mensagem de início de servidor
-app.listen(8080, () => console.log("Servidor iniciado"));
+app.listen(port, () => console.log("Servidor iniciado"));
