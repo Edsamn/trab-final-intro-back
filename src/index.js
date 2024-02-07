@@ -48,8 +48,8 @@ app.post("/userLogin", async (req, res) => {
   const email = data.email;
   const pass = data.pass;
 
-  const cryptoPass = await bcrypt.hash(pass, 10);
   const user = users.find((user) => user.email === email);
+
   const passMatch = await bcrypt.compare(pass, user.pass);
 
   if (!passMatch) {
