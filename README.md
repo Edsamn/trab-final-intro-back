@@ -20,3 +20,5 @@ Para atualizar um recado, precisa-se informar o id do usuário e o id do post, s
 Para deletar um recado também é necessário ambos id do usuário e id do post.
 
 Link do Render: https://trabalho-final-intro-backend.onrender.com
+
+Documentação do Postman: https://documenter.getpostman.com/view/32555682/2s9Yyy9eVd
