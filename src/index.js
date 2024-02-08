@@ -53,11 +53,11 @@ app.post("/userLogin", async (req, res) => {
   const passMatch = await bcrypt.compare(pass, user.pass);
 
   if (!passMatch) {
-    res.status(400).json({msg: "Login inválido"});
+    res.status(400).json({msg: "Senha inválida"});
   }
 
   if (!user) {
-    res.status(400).json({msg: "Login inválido"});
+    res.status(400).json({msg: "Usuário inválido"});
   }
 
   res.status(200).json({msg: "Bem vindo!"});
@@ -114,9 +114,11 @@ app.put("/posts/:userId/:postId", validatePost, (req, res) => {
 
   if (postIndex !== -1 && userIndex !== -1) {
     posts[postIndex] = newPost;
-    res.status(200).json({msg: "Post atualizado com sucesso", data: postId});
+    res.status(200).json({msg: "Post atualizado com sucesso"});
   } else {
-    return res.status(404).json({msg: "Não foi possível atualizar o post"});
+    return res
+      .status(404)
+      .json({msg: "Não foi possível atualizar o post, possíveis erros: Id do post errado, Id do usuário errado, usuário não logado"});
   }
 });
 
@@ -132,7 +134,9 @@ app.delete("/posts/:userId/:postId", (req, res) => {
     posts.splice(postIndex, 1);
     res.status(200).json({msg: "Post apagado com sucesso"});
   } else {
-    return res.status(404).json({msg: "Não foi possível apagar o post"});
+    return res
+      .status(404)
+      .json({msg: "Não foi possível apagar o post, possíveis erros: Id do post errado, Id do usuário errado, usuário não logado"});
   }
 });
 
