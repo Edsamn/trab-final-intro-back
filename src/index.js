@@ -6,6 +6,7 @@ import validatePost from "./middlewares/validatePost";
 
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({extended: false}));
 app.use(cors());
 const port = 3333;
 
