@@ -10,6 +10,12 @@ app.use(express.urlencoded({extended: false}));
 app.use(cors());
 const port = 3333;
 
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 const users = [];
 const posts = [];
 const loggedUsers = [];
