@@ -56,13 +56,13 @@ app.post("/userLogin", async (req, res) => {
     res.status(400).json({msg: "Senha inválida"});
   }
 
-  if (!user) {
-    res.status(400).json({msg: "Usuário inválido"});
-  }
+  // if (!user) {
+  //   res.status(400).json({msg: "Usuário inválido"});
+  // }
 
   res.status(200).json({msg: "Bem vindo!"});
 
-  loggedUsers.push(user);
+  // loggedUsers.push(user);
 });
 
 //listar usuários logados
