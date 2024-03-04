@@ -1,12 +1,11 @@
 import express from "express";
 import cors from "cors";
 import bcrypt from "bcrypt";
-// import validateUser from "./middlewares/validateUser";
+import validateUser from "./middlewares/validateUser";
 import validatePost from "./middlewares/validatePost";
 
 const app = express();
 app.use(express.json());
-app.use(express.urlencoded({extended: false}));
 app.use(cors());
 const port = 3333;
 
@@ -15,7 +14,7 @@ const posts = [];
 const loggedUsers = [];
 
 //criar usuário
-app.post("/createUser/crypto", async (req, res) => {
+app.post("/createUser/crypto", validateUser, async (req, res) => {
   const data = req.body;
   const name = data.name;
   const email = data.email;
