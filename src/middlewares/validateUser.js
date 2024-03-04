@@ -1,5 +1,5 @@
 function validateUser(req, res, next) {
-  const data = String(req.body);
+  const data = req.body;
 
   if (data.name.length < 2) {
     return res.status(400).json({msg: "O nome precisa ter 2 caracteres ou mais"});
