@@ -120,6 +120,12 @@ app.put("/posts/:userId/:postId", (req, res) => {
   const postId = req.params.postId;
   const userId = req.params.userId;
 
+  const newPost = {
+    id: Date.now().toString(),
+    title: data.title,
+    description: data.description,
+  };
+
   if (data.title.length < 3) {
     return res.status(400).json({msg: "O título precisa ter 3 caracteres ou mais"});
   }
@@ -127,12 +133,6 @@ app.put("/posts/:userId/:postId", (req, res) => {
   if (data.description.length < 3) {
     return res.status(400).json({msg: "A descrição precisa ter 3 caracteres ou mais"});
   }
-
-  const newPost = {
-    id: Date.now().toString(),
-    title: data.title,
-    description: data.description,
-  };
 
   const userIndex = loggedUsers.findIndex((loggedUser) => loggedUser.id === userId);
   const postIndex = posts.findIndex((post) => post.id === postId);
