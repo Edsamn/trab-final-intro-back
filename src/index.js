@@ -1,8 +1,8 @@
 import express from "express";
 import cors from "cors";
 import bcrypt from "bcrypt";
-// import validateUser from "./middlewares/validateUser";
-// import validatePost from "./middlewares/validatePost";
+import validateUser from "./middlewares/validateUser";
+import validatePost from "./middlewares/validatePost";
 
 const app = express();
 app.use(express.json());
@@ -14,19 +14,11 @@ const posts = [];
 const loggedUsers = [];
 
 //criar usuário
-app.post("/createUser/crypto", async (req, res) => {
+app.post("/createUser/crypto", validateUser, async (req, res) => {
   const data = req.body;
   const name = data.name;
   const email = data.email;
   const pass = data.pass;
-
-  if (data.name.length < 2) {
-    return res.status(400).json({msg: "O nome precisa ter 2 caracteres ou mais"});
-  }
-
-  if (data.pass.length < 6) {
-    return res.status(400).json({msg: "A senha precisa ter 6 caracteres ou mais"});
-  }
 
   const emailExists = users.find((user) => user.email === email);
 
@@ -81,19 +73,11 @@ app.get("/loggedUsers", (req, res) => {
 });
 
 //criar recado
-app.post("/createPost/:userId", (req, res) => {
+app.post("/createPost/:userId", validatePost, (req, res) => {
   const data = req.body;
   const title = data.title;
   const description = data.description;
   const userId = req.params.userId;
-
-  if (data.title.length < 3) {
-    return res.status(400).json({msg: "O título precisa ter 3 caracteres ou mais"});
-  }
-
-  if (data.description.length < 3) {
-    return res.status(400).json({msg: "A descrição precisa ter 3 caracteres ou mais"});
-  }
 
   const userIndex = loggedUsers.findIndex((loggedUser) => loggedUser.id === userId);
 
@@ -115,7 +99,7 @@ app.get("/posts", (req, res) => {
 });
 
 //atualizar os recados
-app.put("/posts/:userId/:postId", (req, res) => {
+app.put("/posts/:userId/:postId", validatePost, (req, res) => {
   const data = req.body;
   const postId = req.params.postId;
   const userId = req.params.userId;
@@ -125,14 +109,6 @@ app.put("/posts/:userId/:postId", (req, res) => {
     title: data.title,
     description: data.description,
   };
-
-  if (data.title.length < 3) {
-    return res.status(400).json({msg: "O título precisa ter 3 caracteres ou mais"});
-  }
-
-  if (data.description.length < 3) {
-    return res.status(400).json({msg: "A descrição precisa ter 3 caracteres ou mais"});
-  }
 
   const userIndex = loggedUsers.findIndex((loggedUser) => loggedUser.id === userId);
   const postIndex = posts.findIndex((post) => post.id === postId);
