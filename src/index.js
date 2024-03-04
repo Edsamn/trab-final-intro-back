@@ -6,12 +6,7 @@ import validatePost from "./middlewares/validatePost";
 
 const app = express();
 app.use(express.json());
-app.use(
-  cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-  })
-);
+app.use(cors());
 const port = 3333;
 
 const users = [];
