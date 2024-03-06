@@ -20,22 +20,25 @@ app.post("/createUser/crypto", validateUser, async (req, res) => {
   const email = data.email;
   const pass = data.pass;
 
-  const emailExists = users.find((user) => user.email === email);
+  try {
+    const emailExists = users.find((user) => user.email === email);
+    if (emailExists) {
+      return res.status(400).json({msg: "Email já cadastrado."});
+    }
 
-  if (emailExists) {
-    return res.status(400).json({msg: "Email já cadastrado."});
+    const cryptoPass = await bcrypt.hash(pass, 10);
+
+    users.push({
+      id: Date.now().toString(),
+      name,
+      email,
+      pass: cryptoPass,
+    });
+
+    res.status(201).json({msg: "Usuário cadastrado com sucesso"});
+  } catch (error) {
+    res.status(500).json({msg: "Erro interno"});
   }
-
-  const cryptoPass = await bcrypt.hash(pass, 10);
-
-  users.push({
-    id: Date.now().toString(),
-    name,
-    email,
-    pass: cryptoPass,
-  });
-
-  res.status(201).json({msg: "Usuário cadastrado com sucesso"});
 });
 
 //listar todos os usuários
@@ -48,21 +51,24 @@ app.post("/userLogin", async (req, res) => {
   const data = req.body;
   const email = data.email;
   const pass = data.pass;
+  try {
+    const user = users.find((user) => user.email === email);
+    const passMatch = await bcrypt.compare(pass, user.pass);
 
-  const user = users.find((user) => user.email === email);
-  const passMatch = await bcrypt.compare(pass, user.pass);
+    if (!passMatch) {
+      res.status(400).json({msg: "Senha inválida"});
+    }
 
-  if (!passMatch) {
-    res.status(400).json({msg: "Senha inválida"});
+    if (!user) {
+      res.status(400).json({msg: "Usuário inválido"});
+    }
+
+    res.status(200).json({msg: "Bem vindo!"});
+
+    loggedUsers.push(user);
+  } catch (error) {
+    res.status(500).json({msg: "Erro interno"});
   }
-
-  if (!user) {
-    res.status(400).json({msg: "Usuário inválido"});
-  }
-
-  res.status(200).json({msg: "Bem vindo!"});
-
-  loggedUsers.push(user);
 });
 
 //listar usuários logados
@@ -78,18 +84,21 @@ app.post("/createPost/:userId", validatePost, (req, res) => {
   const title = data.title;
   const description = data.description;
   const userId = req.params.userId;
+  try {
+    const userIndex = loggedUsers.findIndex((loggedUser) => loggedUser.id === userId);
 
-  const userIndex = loggedUsers.findIndex((loggedUser) => loggedUser.id === userId);
-
-  if (userIndex !== -1) {
-    posts.push({
-      id: Date.now().toString(),
-      title,
-      description,
-    });
-    res.status(201).json({msg: "Post criado com sucesso"});
-  } else {
-    res.status(400).json({msg: "Não é possível criar um post sem estar logado"});
+    if (userIndex !== -1) {
+      posts.push({
+        id: Date.now().toString(),
+        title,
+        description,
+      });
+      res.status(201).json({msg: "Post criado com sucesso"});
+    } else {
+      res.status(400).json({msg: "Não é possível criar um post sem estar logado"});
+    }
+  } catch (error) {
+    res.status(500).json({msg: "Erro interno"});
   }
 });
 
@@ -104,22 +113,26 @@ app.put("/posts/:userId/:postId", validatePost, (req, res) => {
   const postId = req.params.postId;
   const userId = req.params.userId;
 
-  const newPost = {
-    id: Date.now().toString(),
-    title: data.title,
-    description: data.description,
-  };
+  try {
+    const newPost = {
+      id: Date.now().toString(),
+      title: data.title,
+      description: data.description,
+    };
 
-  const userIndex = loggedUsers.findIndex((loggedUser) => loggedUser.id === userId);
-  const postIndex = posts.findIndex((post) => post.id === postId);
+    const userIndex = loggedUsers.findIndex((loggedUser) => loggedUser.id === userId);
+    const postIndex = posts.findIndex((post) => post.id === postId);
 
-  if (postIndex !== -1 && userIndex !== -1) {
-    posts[postIndex] = newPost;
-    res.status(200).json({msg: "Post atualizado com sucesso"});
-  } else {
-    return res
-      .status(404)
-      .json({msg: "Não foi possível atualizar o post, possíveis erros: Id do post errado, Id do usuário errado, usuário não logado"});
+    if (postIndex !== -1 && userIndex !== -1) {
+      posts[postIndex] = newPost;
+      res.status(200).json({msg: "Post atualizado com sucesso"});
+    } else {
+      return res
+        .status(404)
+        .json({msg: "Não foi possível atualizar o post, possíveis erros: Id do post errado, Id do usuário errado, usuário não logado"});
+    }
+  } catch (error) {
+    res.status(500).json({msg: "Erro interno"});
   }
 });
 
@@ -128,16 +141,20 @@ app.delete("/posts/:userId/:postId", (req, res) => {
   const postId = req.params.postId;
   const userId = req.params.userId;
 
-  const userIndex = loggedUsers.findIndex((loggedUser) => loggedUser.id === userId);
-  const postIndex = posts.findIndex((post) => post.id === postId);
+  try {
+    const userIndex = loggedUsers.findIndex((loggedUser) => loggedUser.id === userId);
+    const postIndex = posts.findIndex((post) => post.id === postId);
 
-  if (postIndex !== -1 && userIndex !== -1) {
-    posts.splice(postIndex, 1);
-    res.status(200).json({msg: "Post apagado com sucesso"});
-  } else {
-    return res
-      .status(404)
-      .json({msg: "Não foi possível apagar o post, possíveis erros: Id do post errado, Id do usuário errado, usuário não logado"});
+    if (postIndex !== -1 && userIndex !== -1) {
+      posts.splice(postIndex, 1);
+      res.status(200).json({msg: "Post apagado com sucesso"});
+    } else {
+      return res
+        .status(404)
+        .json({msg: "Não foi possível apagar o post, possíveis erros: Id do post errado, Id do usuário errado, usuário não logado"});
+    }
+  } catch (error) {
+    res.status(500).json({msg: "Erro interno"});
   }
 });
 
