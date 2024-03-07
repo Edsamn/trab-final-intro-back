@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import bcrypt from "bcrypt";
+// import bcrypt from "bcrypt";
 import validateUser from "./middlewares/validateUser";
 import validatePost from "./middlewares/validatePost";
 
@@ -26,13 +26,14 @@ app.post("/createUser/crypto", validateUser, async (req, res) => {
       return res.status(400).json({msg: "Email já cadastrado."});
     }
 
-    const cryptoPass = await bcrypt.hash(pass, 10);
+    // const cryptoPass = await bcrypt.hash(pass, 10);
 
     users.push({
       id: Date.now().toString(),
       name,
       email,
-      pass: cryptoPass,
+      pass,
+      //  : cryptoPass,
     });
 
     res.status(201).json({msg: "Usuário cadastrado com sucesso"});
@@ -53,9 +54,9 @@ app.post("/userLogin", async (req, res) => {
   const pass = data.pass;
   try {
     const user = users.find((user) => user.email === email);
-    const passMatch = await bcrypt.compare(pass, user.pass);
+    // const passMatch = await bcrypt.compare(pass, user.pass);
 
-    if (!passMatch) {
+    if (!pass) {
       res.status(400).json({msg: "Senha inválida"});
     }
 
@@ -65,18 +66,18 @@ app.post("/userLogin", async (req, res) => {
 
     res.status(200).json({msg: "Bem vindo!"});
 
-    loggedUsers.push(user);
+    // loggedUsers.push(user);
   } catch (error) {
     res.status(500).json({msg: "Erro interno"});
   }
 });
 
 //listar usuários logados
-app.get("/loggedUsers", (req, res) => {
-  if (loggedUsers) {
-    return res.status(200).json({msg: "Usuários logados no momento", data: loggedUsers});
-  }
-});
+// app.get("/loggedUsers", (req, res) => {
+//   if (loggedUsers) {
+//     return res.status(200).json({msg: "Usuários logados no momento", data: loggedUsers});
+//   }
+// });
 
 //criar recado
 app.post("/createPost/:userId", validatePost, (req, res) => {
