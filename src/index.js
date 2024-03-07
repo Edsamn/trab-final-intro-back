@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-// import bcrypt from "bcrypt";
+import bcrypt from "bcrypt";
 import validateUser from "./middlewares/validateUser";
 import validatePost from "./middlewares/validatePost";
 
@@ -26,19 +26,18 @@ app.post("/createUser/crypto", validateUser, async (req, res) => {
       return res.status(400).json({msg: "Email já cadastrado."});
     }
 
-    // const cryptoPass = await bcrypt.hash(pass, 10);
+    const cryptoPass = await bcrypt.hash(pass, 10);
 
     users.push({
       id: Date.now().toString(),
       name,
       email,
-      pass,
-      //  : cryptoPass,
+      pass: cryptoPass,
     });
 
-    res.status(201).json({msg: "Usuário cadastrado com sucesso"});
+    return res.status(201).json({msg: "Usuário cadastrado com sucesso"});
   } catch (error) {
-    res.status(500).json({msg: "Erro interno"});
+    return res.status(500).json({msg: "Erro interno"});
   }
 });
 
@@ -54,30 +53,28 @@ app.post("/userLogin", async (req, res) => {
   const pass = data.pass;
   try {
     const user = users.find((user) => user.email === email);
-    // const passMatch = await bcrypt.compare(pass, user.pass);
+    const passMatch = await bcrypt.compare(pass, user.pass);
 
-    if (!pass) {
-      res.status(400).json({msg: "Senha inválida"});
+    if (!passMatch) {
+      return res.status(400).json({msg: "Senha inválida"});
     }
 
     if (!user) {
-      res.status(400).json({msg: "Usuário inválido"});
+      return res.status(400).json({msg: "Usuário inválido"});
     }
-
-    res.status(200).json({msg: "Bem vindo!"});
-
-    // loggedUsers.push(user);
+    loggedUsers.push(user);
+    return res.status(200).json({msg: "Bem vindo!"});
   } catch (error) {
-    res.status(500).json({msg: "Erro interno"});
+    return res.status(500).json({msg: "Erro interno"});
   }
 });
 
-//listar usuários logados
-// app.get("/loggedUsers", (req, res) => {
-//   if (loggedUsers) {
-//     return res.status(200).json({msg: "Usuários logados no momento", data: loggedUsers});
-//   }
-// });
+// listar usuários logados
+app.get("/loggedUsers", (req, res) => {
+  if (loggedUsers) {
+    return res.status(200).json({msg: "Usuários logados no momento", data: loggedUsers});
+  }
+});
 
 //criar recado
 app.post("/createPost/:userId", validatePost, (req, res) => {
@@ -94,12 +91,12 @@ app.post("/createPost/:userId", validatePost, (req, res) => {
         title,
         description,
       });
-      res.status(201).json({msg: "Post criado com sucesso"});
+      return res.status(201).json({msg: "Post criado com sucesso"});
     } else {
-      res.status(400).json({msg: "Não é possível criar um post sem estar logado"});
+      return res.status(400).json({msg: "Não é possível criar um post sem estar logado"});
     }
   } catch (error) {
-    res.status(500).json({msg: "Erro interno"});
+    return res.status(500).json({msg: "Erro interno"});
   }
 });
 
@@ -133,7 +130,7 @@ app.put("/posts/:userId/:postId", validatePost, (req, res) => {
         .json({msg: "Não foi possível atualizar o post, possíveis erros: Id do post errado, Id do usuário errado, usuário não logado"});
     }
   } catch (error) {
-    res.status(500).json({msg: "Erro interno"});
+    return res.status(500).json({msg: "Erro interno"});
   }
 });
 
@@ -148,14 +145,14 @@ app.delete("/posts/:userId/:postId", (req, res) => {
 
     if (postIndex !== -1 && userIndex !== -1) {
       posts.splice(postIndex, 1);
-      res.status(200).json({msg: "Post apagado com sucesso"});
+      return res.status(200).json({msg: "Post apagado com sucesso"});
     } else {
       return res
         .status(404)
         .json({msg: "Não foi possível apagar o post, possíveis erros: Id do post errado, Id do usuário errado, usuário não logado"});
     }
   } catch (error) {
-    res.status(500).json({msg: "Erro interno"});
+    return res.status(500).json({msg: "Erro interno"});
   }
 });
 
