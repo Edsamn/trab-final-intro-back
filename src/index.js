@@ -110,12 +110,12 @@ app.get("/posts", (req, res) => {
     const limit = parseInt(req.query.limit);
     const offset = parseInt(req.query.offset);
 
-    const positivePageCheck = Math.floor(Math.random() * offset);
+    const positivePageCheck = offset - 1;
 
     const paginatedPosts = posts.slice(positivePageCheck, positivePageCheck + limit);
 
     res.status(200).json({
-      msg: "Produtos retirnados com sucesso",
+      msg: "Produtos retornados com sucesso",
       data: paginatedPosts,
       totalPosts: posts.length,
       currentPage: Math.floor(positivePageCheck / limit) + 1,
