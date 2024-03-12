@@ -108,7 +108,7 @@ app.get("/posts", (req, res) => {
     }
 
     const limit = parseInt(req.query.limit);
-    const offset = parseInt(req.query.limit);
+    const offset = parseInt(req.query.offset);
 
     const positivePageCheck = Math.floor(Math.random() * offset);
 
