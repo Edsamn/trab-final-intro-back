@@ -1,4 +1,4 @@
-import express from "express";
+import express, {response} from "express";
 import cors from "cors";
 import bcrypt from "bcrypt";
 import validateUser from "./middlewares/validateUser";
@@ -102,7 +102,30 @@ app.post("/createPost/:userId", validatePost, (req, res) => {
 
 //listar os recados
 app.get("/posts", (req, res) => {
-  return res.status(200).json({msg: "Lista de recados", data: posts});
+  try {
+    if (posts.length === 0) {
+      return res.status(400).json({msg: "A lista está vazia"});
+    }
+
+    const limit = parseInt(req.query.limit);
+    const offset = parseInt(req.query.limit);
+
+    const positivePageCheck = Math.floor(Math.random() * offset);
+
+    const paginatedPosts = posts.slice(positivePageCheck, positivePageCheck + limit);
+
+    res.status(200).json({
+      msg: "Produtos retirnados com sucesso",
+      data: paginatedPosts,
+      totalPosts: posts.length,
+      currentPage: Math.floor(positivePageCheck / limit) + 1,
+      totalPages: Math.ceil(posts.length),
+      limitByPage: limit,
+    });
+  } catch (error) {
+    res.status(500).json({msg: "Erro interno"});
+  }
+  // return res.status(200).json({msg: "Lista de recados", data: posts});
 });
 
 //atualizar os recados
