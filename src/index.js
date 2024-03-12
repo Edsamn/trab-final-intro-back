@@ -119,7 +119,7 @@ app.get("/posts", (req, res) => {
       data: paginatedPosts,
       totalPosts: posts.length,
       currentPage: Math.floor(positivePageCheck / limit) + 1,
-      totalPages: Math.ceil(posts.length),
+      totalPages: Math.ceil(posts.length / limit),
       limitByPage: limit,
     });
   } catch (error) {
