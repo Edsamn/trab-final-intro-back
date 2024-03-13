@@ -25,6 +25,7 @@ app.post("/createUser/crypto", validateUser, async (req, res) => {
     if (emailExists) {
       return res.status(400).json({msg: "Email já cadastrado."});
     }
+    console.log(emailExists);
 
     const cryptoPass = await bcrypt.hash(pass, 10);
 
